@@ -9,5 +9,6 @@
         android:text="Hello, World!"
         android:textSize="26sp"
         android:gravity="center"
-        android:layout_gravity="center"/>
+        android:layout_gravity="center"
+        android:id="@+id/feed_title" />
 </LinearLayout>
