@@ -5,6 +5,9 @@ import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.widget.ImageView;
+
+import com.nostra13.universalimageloader.core.ImageLoader;
 
 import io.bloc.android.blocly.R;
 import io.bloc.android.blocly.ui.adapter.ItemAdapter;
@@ -26,7 +29,9 @@ public class BloclyActivity extends Activity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(itemAdapter);
-
+        ImageLoader imageLoader = ImageLoader.getInstance();
+        ImageView background = (ImageView) findViewById(R.id.bg_activity_blocly);
+        imageLoader.displayImage("http://beckybendylegs.com/wp-content/uploads/2015/07/blue-sky.jpg", background);
 
     }
 }
