@@ -52,6 +52,7 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemAdapterVie
         View headerWrapper;
         ImageView headerImage;
         RssItem rssItem;
+        boolean active;
 
         public ItemAdapterViewHolder(View itemView) {
             super(itemView);
@@ -116,6 +117,13 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemAdapterVie
         @Override
         public void onClick(View view) {
             Toast.makeText(view.getContext(), rssItem.getTitle(), Toast.LENGTH_SHORT).show();
+            if (!active) {
+                view.setBackgroundColor(view.getContext().getResources().getColor(R.color.blue_dark));
+                active = true;
+            } else {
+                view.setBackgroundColor(view.getContext().getResources().getColor(R.color.black_26));
+                active = false;
+            }
         }
     }
 
