@@ -10,17 +10,20 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.CompoundButton;
 import android.widget.Toast;
 
 import io.bloc.android.blocly.R;
 import io.bloc.android.blocly.api.model.RssFeed;
+import io.bloc.android.blocly.api.model.RssItem;
 import io.bloc.android.blocly.ui.adapter.ItemAdapter;
 import io.bloc.android.blocly.ui.adapter.NavigationDrawerAdapter;
 
 /**
  * Created by igor on 12/8/15.
  */
-public class BloclyActivity extends ActionBarActivity implements NavigationDrawerAdapter.NavigationDrawerAdapterDelegate {
+public class BloclyActivity extends ActionBarActivity implements NavigationDrawerAdapter.NavigationDrawerAdapterDelegate, ItemAdapter.ItemAdapterDelegate {
     private ItemAdapter itemAdapter;
     private ActionBarDrawerToggle drawerToggle;
     private DrawerLayout drawerLayout;
@@ -35,6 +38,7 @@ public class BloclyActivity extends ActionBarActivity implements NavigationDrawe
         setSupportActionBar(toolbar);
 
         itemAdapter = new ItemAdapter();
+        itemAdapter.setDelegate(this);
 
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.rv_activity_blocly);
 
@@ -92,5 +96,39 @@ public class BloclyActivity extends ActionBarActivity implements NavigationDrawe
         // #3b
         drawerLayout.closeDrawers();
         Toast.makeText(this, "Show RSS items from " + rssFeed.getTitle(), Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void didExpandOrContractItem(View view, Boolean isExpanded) {
+        if (isExpanded == true) {
+            Toast.makeText(this, "View Expanded.", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, "View Contracted.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void didVisit(RssItem rssItem) {
+        Toast.makeText(this, "Site: " + rssItem.getUrl() + " visited." , Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void didFavorite(CompoundButton Button, Boolean didFavourite) {
+        if (didFavourite) {
+            Toast.makeText(this, "Favourited!", Toast.LENGTH_SHORT).show();
+        } else if (!didFavourite) {
+            Toast.makeText(this, "Unfavourited!", Toast.LENGTH_SHORT).show();
+        }
+
+    }
+
+    @Override
+    public void didArchive(CompoundButton Button, Boolean didArchive) {
+        if (didArchive) {
+            Toast.makeText(this, "Archived!", Toast.LENGTH_SHORT).show();
+        } else if (!didArchive) {
+            Toast.makeText(this, "Un-archived!!", Toast.LENGTH_SHORT).show();
+        }
+
     }
 }

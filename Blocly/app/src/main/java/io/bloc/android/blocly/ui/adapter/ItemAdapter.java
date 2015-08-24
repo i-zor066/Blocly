@@ -18,6 +18,8 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 
+import java.lang.ref.WeakReference;
+
 import io.bloc.android.blocly.BloclyApplication;
 import io.bloc.android.blocly.R;
 import io.bloc.android.blocly.api.DataSource;
@@ -30,6 +32,27 @@ import io.bloc.android.blocly.api.model.RssItem;
 public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemAdapterViewHolder> {
 
     private static String TAG = ItemAdapter.class.getSimpleName();
+
+    public static interface ItemAdapterDelegate {
+        public void didExpandOrContractItem (View view, Boolean isExpanded );
+        public void didVisit (RssItem rssItem);
+        public void didFavorite (CompoundButton Button, Boolean didFavourite );
+        public void didArchive (CompoundButton Button, Boolean didArchive);
+
+    }
+
+    WeakReference<ItemAdapterDelegate> delegate;
+
+    public ItemAdapterDelegate getDelegate () {
+        if (delegate == null) {
+            return null;
+        }
+        return delegate.get();
+    }
+
+    public void setDelegate(ItemAdapterDelegate delegate) {
+        this.delegate = new  WeakReference<ItemAdapterDelegate>(delegate);
+    }
 
     @Override
     public ItemAdapterViewHolder onCreateViewHolder(ViewGroup viewGroup, int index) {
@@ -137,8 +160,10 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemAdapterVie
         public void onClick(View view) {
             if (view == itemView) {
                 animateContent(!contentExpanded);
+                getDelegate().didExpandOrContractItem(view, contentExpanded);
             } else {
                 Toast.makeText(view.getContext(), "Visit " + rssItem.getUrl(), Toast.LENGTH_SHORT).show();
+                getDelegate().didVisit(rssItem);
             }
 
         }
@@ -149,7 +174,18 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemAdapterVie
 
         @Override
         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-            Log.v(TAG, "Checked changed to: " + isChecked);
+            String whichButton;
+            if (getDelegate() == null) {
+                return;
+            }
+            if (archiveCheckbox.getId() == buttonView.getId()) {
+                whichButton = "Archive CheckBox";
+                getDelegate().didArchive(buttonView, isChecked);
+            } else {
+                whichButton = " Favorite CheckBox";
+                getDelegate().didFavorite(buttonView, isChecked);
+            };
+            Log.v(TAG, whichButton + " changed to: " + isChecked);
 
         }
 
