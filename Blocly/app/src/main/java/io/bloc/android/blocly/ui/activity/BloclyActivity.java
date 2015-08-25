@@ -28,6 +28,7 @@ import io.bloc.android.blocly.ui.adapter.NavigationDrawerAdapter;
  * Created by igor on 12/8/15.
  */
 public class BloclyActivity extends ActionBarActivity implements NavigationDrawerAdapter.NavigationDrawerAdapterDelegate, ItemAdapter.DataSource, ItemAdapter.Delegate {
+    private RecyclerView recyclerView;
     private ItemAdapter itemAdapter;
     private ActionBarDrawerToggle drawerToggle;
     private DrawerLayout drawerLayout;
@@ -47,7 +48,8 @@ public class BloclyActivity extends ActionBarActivity implements NavigationDrawe
         itemAdapter.setDataSource(this);
         itemAdapter.setDelegate(this);
 
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.rv_activity_blocly);
+
+        recyclerView = (RecyclerView) findViewById(R.id.rv_activity_blocly);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -211,6 +213,7 @@ public class BloclyActivity extends ActionBarActivity implements NavigationDrawe
         if (itemAdapter.getExpandedItem() != rssItem) {
             positionToExpand = BloclyApplication.getSharedDataSource().getItems().indexOf(rssItem);
             itemAdapter.setExpandedItem(rssItem);
+
         } else {
             itemAdapter.setExpandedItem(null);
         }
@@ -220,7 +223,12 @@ public class BloclyActivity extends ActionBarActivity implements NavigationDrawe
 
         if (positionToExpand > -1) {
             itemAdapter.notifyItemChanged(positionToExpand);
+        } else {
+            return;
         }
+
+       View scroll = recyclerView.getLayoutManager().findViewByPosition(positionToExpand);
+       recyclerView.scrollBy(0, scroll.getTop());
 
     }
 }
