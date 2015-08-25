@@ -45,6 +45,9 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemAdapterVie
     private WeakReference<Delegate> delegate;
     private WeakReference<DataSource> dataSource;
 
+    private int collapsedItemHeight;
+    private int expandedItemHeight;
+
     @Override
     public ItemAdapterViewHolder onCreateViewHolder(ViewGroup viewGroup, int index) {
         View inflate = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.rss_item, viewGroup, false);
@@ -100,6 +103,21 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemAdapterVie
     }
 
 
+    public int getCollapsedItemHeight() {
+        return collapsedItemHeight;
+    }
+
+    private void setCollapsedItemHeight(int collapsedItemHeight) {
+        this.collapsedItemHeight = collapsedItemHeight;
+    }
+
+    public int getExpandedItemHeight() {
+        return expandedItemHeight;
+    }
+
+    private void setExpandedItemHeight(int expandedItemHeight) {
+        this.expandedItemHeight = expandedItemHeight;
+    }
 
     class ItemAdapterViewHolder extends RecyclerView.ViewHolder implements ImageLoadingListener, View.OnClickListener, CompoundButton.OnCheckedChangeListener {
 
@@ -214,19 +232,16 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemAdapterVie
           */
 
         private void animateContent(final boolean expand) {
-            // #1
             if ((expand && contentExpanded) || (!expand && !contentExpanded)) {
                 return;
             }
-            // #2
             int startingHeight = expandedContentWrapper.getMeasuredHeight();
             int finalHeight = content.getMeasuredHeight();
             if (expand) {
-                // #3
+                setCollapsedItemHeight(itemView.getHeight());
                 startingHeight = finalHeight;
                 expandedContentWrapper.setAlpha(0f);
                 expandedContentWrapper.setVisibility(View.VISIBLE);
-                // #4
                 expandedContentWrapper.measure(
                         View.MeasureSpec.makeMeasureSpec(content.getWidth(), View.MeasureSpec.EXACTLY),
                         ViewGroup.LayoutParams.WRAP_CONTENT
@@ -238,24 +253,24 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemAdapterVie
             startAnimator(startingHeight, finalHeight, new ValueAnimator.AnimatorUpdateListener() {
                 @Override
                 public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                    // #5
                     float animatedFraction = valueAnimator.getAnimatedFraction();
                     float wrapperAlpha = expand ? animatedFraction : 1f - animatedFraction;
                     float contentAlpha = 1f - wrapperAlpha;
 
                     expandedContentWrapper.setAlpha(wrapperAlpha);
                     content.setAlpha(contentAlpha);
-                    // #6
                     expandedContentWrapper.getLayoutParams().height = animatedFraction == 1f ?
                             ViewGroup.LayoutParams.WRAP_CONTENT :
                             (Integer) valueAnimator.getAnimatedValue();
-                    // #7
                     expandedContentWrapper.requestLayout();
                     if (animatedFraction == 1f) {
                         if (expand) {
                             content.setVisibility(View.GONE);
+                            setExpandedItemHeight(itemView.getHeight());
                         } else {
                             expandedContentWrapper.setVisibility(View.GONE);
+                            setExpandedItemHeight(itemView.getHeight());
+
                         }
                     }
                 }
