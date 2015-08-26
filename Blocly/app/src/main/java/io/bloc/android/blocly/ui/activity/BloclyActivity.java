@@ -1,5 +1,6 @@
 package io.bloc.android.blocly.ui.activity;
 
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -148,7 +149,17 @@ public class BloclyActivity extends ActionBarActivity implements NavigationDrawe
         if (drawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
-        Toast.makeText(this, item.getTitle(), Toast.LENGTH_SHORT).show();
+        if (item.getItemId() == R.id.action_share) {
+            RssItem rssItem = itemAdapter.getExpandedItem();
+            Intent sendIntent = new Intent();
+            sendIntent.setAction(Intent.ACTION_SEND);
+            sendIntent.putExtra(Intent.EXTRA_TEXT, String.format("Title: " + rssItem.getTitle() + "\nURL: " + rssItem.getUrl()));
+            sendIntent.setType("text/plain");
+            Intent chooser = Intent.createChooser(sendIntent, "Share with");
+            startActivity(chooser);
+        } else {
+            Toast.makeText(this, item.getTitle(), Toast.LENGTH_SHORT).show();
+        }
         return super.onOptionsItemSelected(item);
     }
 
@@ -156,7 +167,18 @@ public class BloclyActivity extends ActionBarActivity implements NavigationDrawe
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.blocly, menu);
         this.menu = menu;
+        showShareItem(false);
         return super.onCreateOptionsMenu(menu);
+
+    }
+
+    private void showShareItem (boolean enabled) {
+        MenuItem shareItem = menu.findItem(R.id.action_share);
+        if (enabled) {
+            shareItem.setEnabled(true).setVisible(true);
+        } else {
+            shareItem.setEnabled(false).setVisible(false);
+        }
     }
 
          /*
@@ -225,7 +247,9 @@ public class BloclyActivity extends ActionBarActivity implements NavigationDrawe
 
         if (positionToExpand > -1) {
             itemAdapter.notifyItemChanged(positionToExpand);
+            showShareItem(true);
         } else {
+            showShareItem(false);
             return;
         }
 
