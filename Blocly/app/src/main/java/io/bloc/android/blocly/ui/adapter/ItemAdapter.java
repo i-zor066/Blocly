@@ -61,7 +61,7 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemAdapterVie
         }
         RssItem rssItem = getDataSource().getRssItem(this, index);
         RssFeed rssFeed = getDataSource().getRssFeed(this, index);
-        itemAdapterViewHolder.update(rssFeed,rssItem);
+        itemAdapterViewHolder.update(rssFeed, rssItem);
     }
 
     @Override
@@ -208,7 +208,7 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemAdapterVie
         @Override
         public void onClick(View view) {
             if (view == itemView) {
-                if (getDelegate() !=null) {
+                if (getDelegate() != null) {
                     getDelegate().onItemClicked(ItemAdapter.this, rssItem);
                 }
             } else {
@@ -269,7 +269,6 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemAdapterVie
                             setExpandedItemHeight(itemView.getHeight());
                         } else {
                             expandedContentWrapper.setVisibility(View.GONE);
-                            setExpandedItemHeight(itemView.getHeight());
 
                         }
                     }
