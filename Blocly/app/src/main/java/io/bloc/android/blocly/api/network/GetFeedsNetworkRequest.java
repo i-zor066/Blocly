@@ -6,6 +6,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by igor on 27/8/15.
@@ -22,7 +26,7 @@ public class GetFeedsNetworkRequest extends NetworkRequest {
     public Object performRequest() {
         for (String feedUrlString : feedUrls) {
             InputStream inputStream = openStream(feedUrlString);
-            int counter = 0;
+            //int counter = 0;
             if (inputStream == null) {
                 return null;
             }
@@ -33,8 +37,13 @@ public class GetFeedsNetworkRequest extends NetworkRequest {
                     Log.v(getClass().getSimpleName(), "Line: " + line);
                     line = bufferedReader.readLine();
                     if (line != null) {
-                    counter = counter + numberOfOccurrences(line, "<title>");
-                    Log.v(getClass().getSimpleName(), "Counter: " + counter);}
+                        /*counter = counter + numberOfOccurrences(line, "<item>");
+                        Log.v(getClass().getSimpleName(), "Counter: " + counter);*/
+                        List<String> items = getTagValues(line);
+                        int counter2 = items.size();
+                        Log.v(getClass().getSimpleName(), "Number of titles: " + counter2);
+                        Log.v(getClass().getSimpleName(), "List of titles: " + items);
+                    }
                 }
                 bufferedReader.close();
             } catch (IOException e) {
@@ -46,7 +55,7 @@ public class GetFeedsNetworkRequest extends NetworkRequest {
         return null;
     }
 
-    private static int numberOfOccurrences(String source, String sentence) {
+   /* private static int numberOfOccurrences(String source, String sentence) {
         int occurrences = 0;
 
         if (source.contains(sentence)) {
@@ -56,6 +65,17 @@ public class GetFeedsNetworkRequest extends NetworkRequest {
         }
 
         return occurrences;
+    }*/
+
+    private static final Pattern TAG_REGEX = Pattern.compile("<item><title>(.+?)</title>");
+
+    private static List<String> getTagValues(final String str) {
+        final List<String> tagValues = new ArrayList<String>();
+        final Matcher matcher = TAG_REGEX.matcher(str);
+        while (matcher.find()) {
+            tagValues.add(matcher.group(1));
+        }
+        return tagValues;
     }
 
 }
