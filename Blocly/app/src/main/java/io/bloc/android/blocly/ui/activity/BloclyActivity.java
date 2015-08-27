@@ -2,6 +2,8 @@ package io.bloc.android.blocly.ui.activity;
 
 import android.animation.ValueAnimator;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -13,6 +15,7 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,6 +23,7 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import io.bloc.android.blocly.BloclyApplication;
 import io.bloc.android.blocly.R;
@@ -39,6 +43,7 @@ public class BloclyActivity extends ActionBarActivity implements NavigationDrawe
     private NavigationDrawerAdapter navigationDrawerAdapter;
     private Menu menu;
     private View overflowButton;
+    private static String TAG = BloclyActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -140,6 +145,43 @@ public class BloclyActivity extends ActionBarActivity implements NavigationDrawe
         navigationRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         navigationRecyclerView.setItemAnimator(new DefaultItemAnimator());
         navigationRecyclerView.setAdapter(navigationDrawerAdapter);
+
+        Intent openWebPage = new Intent(Intent.ACTION_VIEW);
+        openWebPage.setData(Uri.parse("http://www.example.com"));
+
+        List<ResolveInfo> browserList = getPackageManager().queryIntentActivities(openWebPage, PackageManager.GET_META_DATA);
+
+        List<String> packageListBrowsers = new ArrayList<>();
+        for (ResolveInfo info : browserList) {
+            String packageName = info.activityInfo.applicationInfo.packageName;
+            packageListBrowsers.add(packageName);
+        }
+
+        Log.e(TAG, "Browser list:  " + packageListBrowsers);
+
+        Intent dial = new Intent(Intent.ACTION_DIAL);
+
+        List<ResolveInfo> dialerList = getPackageManager().queryIntentActivities(dial, PackageManager.GET_META_DATA);
+
+        List<String> packageListDialers = new ArrayList<>();
+        for (ResolveInfo info : dialerList) {
+            String packageName = info.activityInfo.applicationInfo.packageName;
+            packageListDialers.add(packageName);
+        }
+        Log.e(TAG, "Dialer list:  " + packageListDialers);
+        Log.e(TAG, "Dialer list (raw):  " + dialerList);
+
+        Intent composeEmail = new Intent(Intent.ACTION_SENDTO);
+        composeEmail.setData(Uri.fromParts("mailto", "info@example.com", null));
+
+        List<ResolveInfo> mailerList = getPackageManager().queryIntentActivities(composeEmail, PackageManager.GET_META_DATA);
+        List<String> packageListMailers = new ArrayList<>();
+        for (ResolveInfo info : mailerList) {
+            String packageName = info.activityInfo.applicationInfo.packageName;
+            packageListMailers.add(packageName);
+        }
+
+        Log.e(TAG, "Mailer list:  " + packageListMailers);
 
     }
 
