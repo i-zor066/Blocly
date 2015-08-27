@@ -22,6 +22,7 @@ public class GetFeedsNetworkRequest extends NetworkRequest {
     public Object performRequest() {
         for (String feedUrlString : feedUrls) {
             InputStream inputStream = openStream(feedUrlString);
+            int counter = 0;
             if (inputStream == null) {
                 return null;
             }
@@ -31,6 +32,9 @@ public class GetFeedsNetworkRequest extends NetworkRequest {
                 while (line != null) {
                     Log.v(getClass().getSimpleName(), "Line: " + line);
                     line = bufferedReader.readLine();
+                    if (line != null) {
+                    counter = counter + numberOfOccurrences(line, "<title>");
+                    Log.v(getClass().getSimpleName(), "Counter: " + counter);}
                 }
                 bufferedReader.close();
             } catch (IOException e) {
@@ -40,6 +44,18 @@ public class GetFeedsNetworkRequest extends NetworkRequest {
             }
         }
         return null;
+    }
+
+    private static int numberOfOccurrences(String source, String sentence) {
+        int occurrences = 0;
+
+        if (source.contains(sentence)) {
+            int withSentenceLength    = source.length();
+            int withoutSentenceLength = source.replace(sentence, "").length();
+            occurrences = (withSentenceLength - withoutSentenceLength) / sentence.length();
+        }
+
+        return occurrences;
     }
 
 }
