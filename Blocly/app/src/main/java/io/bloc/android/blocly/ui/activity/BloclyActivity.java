@@ -1,8 +1,11 @@
 package io.bloc.android.blocly.ui.activity;
 
 import android.animation.ValueAnimator;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -13,6 +16,7 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -140,6 +144,24 @@ public class BloclyActivity extends ActionBarActivity implements NavigationDrawe
         navigationRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         navigationRecyclerView.setItemAnimator(new DefaultItemAnimator());
         navigationRecyclerView.setAdapter(navigationDrawerAdapter);
+
+        // Query the Database
+
+        SQLiteDatabase dataB = BloclyApplication.getSharedInstance().openOrCreateDatabase("blocly_db", Context.MODE_PRIVATE, null);
+
+        Cursor cursor = dataB.query(
+                true, // distinct
+                "rss_items", // table
+                null, // columns
+                null, // selection
+                null, // selectionArgs
+                null, // groupBy
+                null, // having
+                "pub_date", // OrderBy
+                "10", // limit
+                null // cancellationSignal
+        );
+
 
     }
 
@@ -295,4 +317,7 @@ public class BloclyActivity extends ActionBarActivity implements NavigationDrawe
         });
         valueAnimator.start();
     }
+
+
+
 }
