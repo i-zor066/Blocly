@@ -1,7 +1,10 @@
 package io.bloc.android.blocly.ui.activity;
 
 import android.animation.ValueAnimator;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -23,6 +26,7 @@ import java.util.ArrayList;
 
 import io.bloc.android.blocly.BloclyApplication;
 import io.bloc.android.blocly.R;
+import io.bloc.android.blocly.api.DataSource;
 import io.bloc.android.blocly.api.model.RssFeed;
 import io.bloc.android.blocly.api.model.RssItem;
 import io.bloc.android.blocly.ui.adapter.ItemAdapter;
@@ -39,6 +43,14 @@ public class BloclyActivity extends ActionBarActivity implements NavigationDrawe
     private NavigationDrawerAdapter navigationDrawerAdapter;
     private Menu menu;
     private View overflowButton;
+
+    private BroadcastReceiver dataSourceBroadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            itemAdapter.notifyDataSetChanged();
+            navigationDrawerAdapter.notifyDataSetChanged();
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -141,6 +153,8 @@ public class BloclyActivity extends ActionBarActivity implements NavigationDrawe
         navigationRecyclerView.setItemAnimator(new DefaultItemAnimator());
         navigationRecyclerView.setAdapter(navigationDrawerAdapter);
 
+        registerReceiver(dataSourceBroadcastReceiver, new IntentFilter(DataSource.ACTION_DOWNLOAD_COMPLETED));
+
     }
 
     @Override
@@ -183,6 +197,12 @@ public class BloclyActivity extends ActionBarActivity implements NavigationDrawe
         this.menu = menu;
         animateShareItem(itemAdapter.getExpandedItem() != null);
         return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(dataSourceBroadcastReceiver);
     }
 
          /*
