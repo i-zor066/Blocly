@@ -95,6 +95,42 @@ public class RssItemTable extends Table {
         return getBoolean(cursor, COLUMN_ARCHIVED);
     }
 
+    public static Cursor getArchived (SQLiteDatabase db) {
+
+       return db.query(true, "rss_items", null, "is_archived='0'", null, null, null, null, null);
+
+    }
+
+    public static Cursor getArchivedSpecific (SQLiteDatabase db, long rssFeedId) {
+
+        return db.query(true, "rss_items", null, "is_archived ='0' AND rss_feed=" + "'" + rssFeedId + "'", null, null, null, null, null);
+
+    }
+
+    public static Cursor getFavorited (SQLiteDatabase db) {
+
+        return db.query(true, "rss_items", null, "is_favorite='0'", null, null, null, null, null);
+
+    }
+
+    public static Cursor getFavoritedSpecific (SQLiteDatabase db, long rssFeedId) {
+
+        return db.query(true, "rss_items", null, "is_favorite ='0' AND rss_feed=" + "'" + rssFeedId + "'", null, null, null, null, null);
+
+    }
+
+    public static Cursor getSpecific (SQLiteDatabase db, long rssFeedId) {
+
+        return db.query(true, "rss_items", null, "rss_feed=" + "'" + rssFeedId + "'", null, null, null, null, null);
+
+    }
+
+    public static Cursor getSpecificOffsetLimit (SQLiteDatabase db, long rssFeedId, int limit, int offset) {
+
+        return db.query(true, "rss_items", null, "rss_feed=" + "'" + rssFeedId + "'", null, null, null, null, "LIMIT " + limit+ " OFFSET " + offset);
+
+    }
+
     private static final String NAME = "rss_items";
 
     private static final String COLUMN_LINK = "link";
