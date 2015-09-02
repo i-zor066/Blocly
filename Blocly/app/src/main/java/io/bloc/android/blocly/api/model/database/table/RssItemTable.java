@@ -101,6 +101,7 @@ public class RssItemTable extends Table {
                 null, null, COLUMN_PUB_DATE + " DESC", null);
     }
 
+
     private static final String NAME = "rss_items";
 
     private static final String COLUMN_LINK = "link";

@@ -14,6 +14,7 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -61,12 +62,14 @@ public class BloclyActivity extends ActionBarActivity implements NavigationDrawe
         itemAdapter.setDataSource(this);
         itemAdapter.setDelegate(this);
 
+
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.srl_activity_blocly);
         // #13
         swipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.primary));
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
+               if (allFeeds.size() < 1) {
                 BloclyApplication.getSharedDataSource().fetchNewFeed("http://feeds.feedburner.com/androidcentral?format=xml",
                         // #14
                         new DataSource.Callback<RssFeed>() {
@@ -88,7 +91,7 @@ public class BloclyActivity extends ActionBarActivity implements NavigationDrawe
                                                 }
                                                 currentItems.addAll(rssItems);
                                                 // #16
-                                               // itemAdapter.notifyItemRangeInserted(0, currentItems.size());
+                                                // itemAdapter.notifyItemRangeInserted(0, currentItems.size());
                                                 itemAdapter.notifyDataSetChanged();
                                                 // #17a
                                                 swipeRefreshLayout.setRefreshing(false);
@@ -108,8 +111,58 @@ public class BloclyActivity extends ActionBarActivity implements NavigationDrawe
                                 // #17c
                                 swipeRefreshLayout.setRefreshing(false);
                             }
-                        });
-            }
+                        }); // fetchNewFeed ends
+
+            } else {
+                    // Insert the fetchUpdates here
+                    BloclyApplication.getSharedDataSource().fetchUpdates("http://feeds.feedburner.com/androidcentral?format=xml",
+                            // #14
+                            new DataSource.Callback<RssFeed>() {
+                                @Override
+                                public void onSuccess(RssFeed rssFeed) {
+                                    // #15a
+                                   if (isFinishing() || isDestroyed()) {
+                                        return;
+                                    }
+                                    Log.v("rssFeed: ", String.valueOf(rssFeed));
+                                    allFeeds.add(rssFeed);
+                                    navigationDrawerAdapter.notifyDataSetChanged();
+                                    BloclyApplication.getSharedDataSource().fetchItemsForFeed(rssFeed,
+                                            new DataSource.Callback<List<RssItem>>() {
+                                                @Override
+                                                public void onSuccess(List<RssItem> rssItems) {
+                                                    // #16b
+                                                    if (isFinishing() || isDestroyed()) {
+                                                        return;
+                                                    }
+                                                    currentItems.addAll(rssItems);
+                                                    Log.v("RssItems: ", String.valueOf(rssItems));
+                                                    // #16
+                                                    // itemAdapter.notifyItemRangeInserted(0, currentItems.size());
+                                                    itemAdapter.notifyDataSetChanged();
+                                                    // #17a
+                                                    swipeRefreshLayout.setRefreshing(false);
+                                                }
+
+                                                @Override
+                                                public void onError(String errorMessage) {
+                                                    // #17b
+                                                    swipeRefreshLayout.setRefreshing(false);
+                                                }
+                                            });
+                                }
+
+                                @Override
+                                public void onError(String errorMessage) {
+                                    Toast.makeText(BloclyActivity.this, errorMessage, Toast.LENGTH_LONG).show();
+                                    // #17c
+                                    swipeRefreshLayout.setRefreshing(false);
+                                }
+                            });
+
+                    // End fetchUpdates
+                }
+            } // onRefresh ends
         });
 
 
