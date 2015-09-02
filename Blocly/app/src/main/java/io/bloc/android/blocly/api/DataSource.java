@@ -231,7 +231,7 @@ public class DataSource {
                                 .insert(databaseOpenHelper.getWritableDatabase());
                     }
                     }
-                
+
                 Cursor newFeedCursor = rssFeedTable.fetchRow(databaseOpenHelper.getReadableDatabase(), feedId);
                 newFeedCursor.moveToFirst();
                 final RssFeed fetchedFeed = feedFromCursor(newFeedCursor);
