@@ -101,6 +101,10 @@ public class RssItemTable extends Table {
                 null, null, COLUMN_PUB_DATE + " DESC", null);
     }
 
+    public static Cursor checkByGUID(SQLiteDatabase readonlyDatabase, String Guid) {
+        return readonlyDatabase.query(true, NAME, null, COLUMN_GUID + " = ?", new String[]{Guid}, null, null, COLUMN_PUB_DATE + " DESC", null);
+    }
+
 
     private static final String NAME = "rss_items";
 

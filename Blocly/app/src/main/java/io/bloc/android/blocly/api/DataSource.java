@@ -2,7 +2,6 @@ package io.bloc.android.blocly.api;
 
 import android.database.Cursor;
 import android.os.Handler;
-import android.util.Log;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -207,41 +206,33 @@ public class DataSource {
                 List<RssItem> rssItemsFromResponse = new ArrayList<RssItem>();
 
                 for (GetFeedsNetworkRequest.ItemResponse itemResponse : newFeedResponse.channelItems) {
-                    long tempRowId = 0;
-                    String guid = itemResponse.itemGUID;
-                    String title = itemResponse.itemTitle;
-                    String description = itemResponse.itemDescription;
-                    String url = itemResponse.itemURL;
-                    String imageUrl = itemResponse.itemEnclosureURL;
-                    long rssFeedId = feedId;
-                    long datePublished = System.currentTimeMillis();
-                    DateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy kk:mm:ss z", Locale.ENGLISH);
-                    try {
-                        datePublished = dateFormat.parse(itemResponse.itemPubDate).getTime();
-                    } catch (ParseException e) {
-                        e.printStackTrace();
+
+                    Cursor isInDb = RssItemTable.checkByGUID(databaseOpenHelper.getReadableDatabase(), itemResponse.itemGUID);
+
+                    if (isInDb.getCount() < 1) {
+
+                        long itemPubDate = System.currentTimeMillis();
+                        DateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy kk:mm:ss z", Locale.ENGLISH);
+                        try {
+                            itemPubDate = dateFormat.parse(itemResponse.itemPubDate).getTime();
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+
+                        new RssItemTable.Builder()
+                                .setTitle(itemResponse.itemTitle)
+                                .setDescription(itemResponse.itemDescription)
+                                .setEnclosure(itemResponse.itemEnclosureURL)
+                                .setMIMEType(itemResponse.itemEnclosureMIMEType)
+                                .setLink(itemResponse.itemURL)
+                                .setGUID(itemResponse.itemGUID)
+                                .setPubDate(itemPubDate)
+                                .setRSSFeed(feedId)
+                                .insert(databaseOpenHelper.getWritableDatabase());
                     }
-                    boolean favorite = false;
-                    boolean archived = false;
-
-                    rssItemsFromResponse.add(new RssItem(tempRowId, guid, title, description, url, imageUrl, rssFeedId, datePublished, favorite, archived));
-                }
-
-
-
-                   /* new RssItemTable.Builder()
-                            .setTitle(itemResponse.itemTitle)
-                            .setDescription(itemResponse.itemDescription)
-                            .setEnclosure(itemResponse.itemEnclosureURL)
-                            .setMIMEType(itemResponse.itemEnclosureMIMEType)
-                            .setLink(itemResponse.itemURL)
-                            .setGUID(itemResponse.itemGUID)
-                            .setPubDate(itemPubDate)
-                            .setRSSFeed(newFeedId)
-                            .insert(databaseOpenHelper.getWritableDatabase());*/
-
-
-                Cursor newFeedCursor = rssFeedTable.fetchRow(databaseOpenHelper.getReadableDatabase(), newFeedId);
+                    }
+                
+                Cursor newFeedCursor = rssFeedTable.fetchRow(databaseOpenHelper.getReadableDatabase(), feedId);
                 newFeedCursor.moveToFirst();
                 final RssFeed fetchedFeed = feedFromCursor(newFeedCursor);
                 newFeedCursor.close();
