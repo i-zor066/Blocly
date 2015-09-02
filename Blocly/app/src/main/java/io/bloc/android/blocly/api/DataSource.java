@@ -2,6 +2,7 @@ package io.bloc.android.blocly.api;
 
 import android.database.Cursor;
 import android.os.Handler;
+import android.util.Log;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -126,6 +127,9 @@ public class DataSource {
                             .setPubDate(itemPubDate)
                             .setRSSFeed(newFeedId)
                             .insert(databaseOpenHelper.getWritableDatabase());
+
+                    String titleLog = itemResponse.itemTitle;
+                    Log.v("FirstDS", titleLog );
                 }
 
                 Cursor newFeedCursor = rssFeedTable.fetchRow(databaseOpenHelper.getReadableDatabase(), newFeedId);
@@ -142,7 +146,7 @@ public class DataSource {
         });
     }
 
-    public void fetchUpdates (final String feedURL, final Callback<RssFeed> callback) {
+    public void fetchUpdates(final String feedURL, final Callback<RssFeed> callback) {
 
         final Handler callbackThreadHandler = new Handler();
 
@@ -150,29 +154,16 @@ public class DataSource {
             @Override
             public void run() {
 
-              Cursor existingFeedCursor = RssFeedTable.fetchFeedWithURL(databaseOpenHelper.getReadableDatabase(), feedURL);
+                Cursor existingFeedCursor = RssFeedTable.fetchFeedWithURL(databaseOpenHelper.getReadableDatabase(), feedURL);
 
-                List<RssItem> itemListFromDb = new ArrayList<RssItem>();
-                long feedId = getRowId(existingFeedCursor);
-                Cursor itemsInTheDb = RssItemTable.fetchItemsForFeed(databaseOpenHelper.getReadableDatabase(), feedId);
-                if (itemsInTheDb.moveToFirst()) {
-                    do {
-                        itemListFromDb.add(itemFromCursor(itemsInTheDb));
-                    } while (itemsInTheDb.moveToNext());
-                    itemsInTheDb.close();
-                }
+                existingFeedCursor.moveToFirst();
+                long feedId = RssFeedTable.getRowId(existingFeedCursor);
+                Log.v("SecondDS", String.valueOf(feedId));
 
-
-                // existingFeedCursor - get the feed row ID
-                // cursor of all the items with said feedID we make a list out of it
-
-                // we compare the list we got from the request and the list we got from the database
-                // remove all the entriesDB from the requestList,
-                // write newList to DB use the feedID
 
                 GetFeedsNetworkRequest getFeedsNetworkRequest = new GetFeedsNetworkRequest(feedURL);
                 List<GetFeedsNetworkRequest.FeedResponse> feedResponses = getFeedsNetworkRequest.performRequest();
-                // #8a
+
                 if (getFeedsNetworkRequest.getErrorCode() != 0) {
                     final String errorMessage;
                     if (getFeedsNetworkRequest.getErrorCode() == NetworkRequest.ERROR_IO) {
@@ -184,7 +175,7 @@ public class DataSource {
                     } else {
                         errorMessage = "Error unknown";
                     }
-                    // #8b
+
                     callbackThreadHandler.post(new Runnable() {
                         @Override
                         public void run() {
@@ -195,21 +186,15 @@ public class DataSource {
                 }
 
                 GetFeedsNetworkRequest.FeedResponse newFeedResponse = feedResponses.get(0);
-                /*long newFeedId = new RssFeedTable.Builder()
-                        .setFeedURL(newFeedResponse.channelFeedURL)
-                        .setSiteURL(newFeedResponse.channelURL)
-                        .setTitle(newFeedResponse.channelTitle)
-                        .setDescription(newFeedResponse.channelDescription)
-                        .insert(databaseOpenHelper.getWritableDatabase());
-                Log.v("FetchUDT newFeedId: ", String.valueOf(newFeedId));*/
 
-                List<RssItem> rssItemsFromResponse = new ArrayList<RssItem>();
 
                 for (GetFeedsNetworkRequest.ItemResponse itemResponse : newFeedResponse.channelItems) {
+
 
                     Cursor isInDb = RssItemTable.checkByGUID(databaseOpenHelper.getReadableDatabase(), itemResponse.itemGUID);
 
                     if (isInDb.getCount() < 1) {
+
 
                         long itemPubDate = System.currentTimeMillis();
                         DateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy kk:mm:ss z", Locale.ENGLISH);
@@ -229,8 +214,9 @@ public class DataSource {
                                 .setPubDate(itemPubDate)
                                 .setRSSFeed(feedId)
                                 .insert(databaseOpenHelper.getWritableDatabase());
+
                     }
-                    }
+                }
 
                 Cursor newFeedCursor = rssFeedTable.fetchRow(databaseOpenHelper.getReadableDatabase(), feedId);
                 newFeedCursor.moveToFirst();

@@ -79,6 +79,7 @@ public class BloclyActivity extends ActionBarActivity implements NavigationDrawe
                                 if (isFinishing() || isDestroyed()) {
                                     return;
                                 }
+                                Log.v("RssFeed1: ", String.valueOf(rssFeed));
                                 allFeeds.add(rssFeed);
                                 navigationDrawerAdapter.notifyDataSetChanged();
                                 BloclyApplication.getSharedDataSource().fetchItemsForFeed(rssFeed,
@@ -90,6 +91,7 @@ public class BloclyActivity extends ActionBarActivity implements NavigationDrawe
                                                     return;
                                                 }
                                                 currentItems.addAll(rssItems);
+                                                Log.v("RssItems1: ", String.valueOf(rssItems));
                                                 // #16
                                                 // itemAdapter.notifyItemRangeInserted(0, currentItems.size());
                                                 itemAdapter.notifyDataSetChanged();
