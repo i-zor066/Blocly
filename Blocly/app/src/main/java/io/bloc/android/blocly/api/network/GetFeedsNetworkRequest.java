@@ -1,5 +1,7 @@
 package io.bloc.android.blocly.api.network;
 
+import android.util.Log;
+
 import org.jsoup.Jsoup;
 import org.jsoup.select.Elements;
 import org.w3c.dom.Document;
@@ -12,6 +14,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -64,6 +68,8 @@ public class GetFeedsNetworkRequest extends NetworkRequest<List<GetFeedsNetworkR
                     String itemURL = null;
                     String itemTitle = null;
                     String itemImageURL = null;
+                    String itemIframeURL = null;
+                    String yThumbURL = null;
                     String itemContentEncodedText = null;
                     String itemMediaURL = null;
                     String itemMediaMIMEType = null;
@@ -72,6 +78,7 @@ public class GetFeedsNetworkRequest extends NetworkRequest<List<GetFeedsNetworkR
                     String itemPubDate = null;
                     String itemEnclosureURL = null;
                     String itemEnclosureMIMEType = null;
+                    String imageHeight = null;
                     Node itemNode = allItemNodes.item(itemIndex);
                     NodeList tagNodes = itemNode.getChildNodes();
                     for (int tagIndex = 0; tagIndex < tagNodes.getLength(); tagIndex++) {
@@ -85,8 +92,14 @@ public class GetFeedsNetworkRequest extends NetworkRequest<List<GetFeedsNetworkR
                         } else if (XML_TAG_DESCRIPTION.equalsIgnoreCase(tag)) {
                             String descriptionText = tagNode.getTextContent();
                             itemImageURL = parseImageFromHTML(descriptionText);
-                            // #4
+                            imageHeight = parseImageHeightFromHTML(descriptionText);
+                            if (imageHeight.contentEquals("1")) {
+                                itemImageURL = null;
+                            }
+                            itemIframeURL = parseIframeLinkFromHTML(descriptionText);
+                            yThumbURL = getThumbFromLink(itemIframeURL);
                             itemDescription = parseTextFromHTML(descriptionText);
+                           // Log.v("imageHeight001", imageHeight + " Blah " + itemImageURL);
                         } else if (XML_TAG_ENCLOSURE.equalsIgnoreCase(tag)) {
                             // #10
                             NamedNodeMap enclosureAttributes = tagNode.getAttributes();
@@ -99,6 +112,12 @@ public class GetFeedsNetworkRequest extends NetworkRequest<List<GetFeedsNetworkR
                         } else if (XML_TAG_CONTENT_ENCODED.equalsIgnoreCase(tag)) {
                             String contentEncoded = tagNode.getTextContent();
                             itemImageURL = parseImageFromHTML(contentEncoded);
+                            imageHeight = parseImageHeightFromHTML(contentEncoded);
+                            if (imageHeight.contentEquals("1")) {
+                                itemImageURL = null;
+                            }
+                            itemIframeURL = parseIframeLinkFromHTML(contentEncoded);
+                            yThumbURL = getThumbFromLink(itemIframeURL);
                             itemContentEncodedText = parseTextFromHTML(contentEncoded);
                             // #8
                         } else if (XML_TAG_MEDIA_CONTENT.equalsIgnoreCase(tag)) {
@@ -111,8 +130,17 @@ public class GetFeedsNetworkRequest extends NetworkRequest<List<GetFeedsNetworkR
                         itemEnclosureURL = itemImageURL;
                     }
                     if (itemEnclosureURL == null) {
+                        itemEnclosureURL = yThumbURL;
+                    }
+                    if (itemEnclosureURL == null) {
                         itemEnclosureURL = itemMediaURL;
                         itemEnclosureMIMEType = itemMediaMIMEType;
+                    }
+                    if (itemMediaURL != null) {
+                        itemEnclosureURL = itemMediaURL;
+                    }
+                    if (yThumbURL != null) {
+                        itemEnclosureURL = yThumbURL;
                     }
                     if (itemContentEncodedText != null) {
                         itemDescription = itemContentEncodedText;
@@ -162,6 +190,53 @@ public class GetFeedsNetworkRequest extends NetworkRequest<List<GetFeedsNetworkR
         }
         return imgElements.attr("src");
     }
+
+    static String parseImageHeightFromHTML(String htmlString) {
+        org.jsoup.nodes.Document document = Jsoup.parse(htmlString);
+        Elements imgElements = document.select("img");
+        if (imgElements.isEmpty()) {
+            return null;
+        }
+        return imgElements.attr("height");
+    }
+
+    static String parseIframeLinkFromHTML(String htmlString) {
+        org.jsoup.nodes.Document document = Jsoup.parse(htmlString);
+        Elements iframeElements = document.select("iframe");
+        if (iframeElements.isEmpty()) {
+            return null;
+        }
+        return iframeElements.attr("src");
+    }
+
+    String getThumbFromLink(String link) {
+
+        if (link == null ) {
+            return null;
+        } else {
+
+            String pattern = "https:\\/\\/www\\.youtube\\.com\\/embed\\/(\\w+)";
+
+            Pattern compiledPattern = Pattern.compile(pattern);
+            Matcher matcher = compiledPattern.matcher(link);
+
+            String id = null;
+            if (matcher.find()) {
+                id = matcher.group(1);
+            }
+            Log.v("id", id + " Blah");
+
+            String thumb = null;
+            if (id != null) {
+                thumb = "http://img.youtube.com/vi/" + id + "/hqdefault.jpg";
+            }
+
+            return thumb;
+        }
+    }
+
+
+
 
     public static class FeedResponse {
         public final String channelFeedURL;

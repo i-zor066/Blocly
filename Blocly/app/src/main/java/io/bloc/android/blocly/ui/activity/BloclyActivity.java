@@ -67,8 +67,14 @@ public class BloclyActivity extends ActionBarActivity implements NavigationDrawe
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
+                // BloclyApplication.getSharedDataSource().fetchNewFeed("http://feeds.feedburner.com/indiewireTelevision?format=xml",
+                // BloclyApplication.getSharedDataSource().fetchNewFeed("http://feeds2.feedburner.com/thenextweb?format=xml",
+                // BloclyApplication.getSharedDataSource().fetchNewFeed("http://www.themarysue.com/feed/",
+                // BloclyApplication.getSharedDataSource().fetchNewFeed("http://feeds.gawker.com/kotaku/full?format=xml",
+                // BloclyApplication.getSharedDataSource().fetchNewFeed("http://feeds.gawker.com/io9/full?format=xml",
                 // BloclyApplication.getSharedDataSource().fetchNewFeed("http://feeds.ign.com/ign/all?format=xml",
-                BloclyApplication.getSharedDataSource().fetchNewFeed("http://feeds.feedburner.com/androidcentral?format=xml",
+                BloclyApplication.getSharedDataSource().fetchNewFeed("http://feeds.ign.com/IGNXboxOneAll?format=xml",
+                //BloclyApplication.getSharedDataSource().fetchNewFeed("http://feeds.feedburner.com/androidcentral?format=xml",
                         // #14
                         new DataSource.Callback<RssFeed>() {
                             @Override
