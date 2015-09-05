@@ -150,7 +150,7 @@ public class BloclyActivity extends ActionBarActivity implements
                 // #14
                 getFragmentManager()
                         .beginTransaction()
-                        .add(R.id.fl_activity_blocly, RssItemListFragment.fragmentForRssFeed(rssFeeds.get(0)))
+                        .add(R.id.fl_activity_blocly, RssItemListFragment.fragmentForRssFeed(rssFeeds.get(0)), rssFeeds.get(0).getTitle())
                         .commit();
             }
 
@@ -221,6 +221,29 @@ public class BloclyActivity extends ActionBarActivity implements
         // #3b
         drawerLayout.closeDrawers();
         Toast.makeText(this, "Show RSS items from " + rssFeed.getTitle(), Toast.LENGTH_SHORT).show();
+        if (getFragmentManager().findFragmentByTag(rssFeed.getTitle()) == null) {
+            getFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.fl_activity_blocly, RssItemListFragment.fragmentForRssFeed(rssFeed), rssFeed.getTitle())
+                    .addToBackStack(rssFeed.getTitle())
+                    .commit();
+        } else {
+            getFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.fl_activity_blocly, getFragmentManager().findFragmentByTag(rssFeed.getTitle()))
+                    .addToBackStack(rssFeed.getTitle())
+                    .commit();
+        }
+
+
+    }
+    @Override
+    public void onBackPressed() {
+        if (getFragmentManager().getBackStackEntryCount() == 0) {
+            super.onBackPressed();
+        } else {
+            getFragmentManager().popBackStack();
+        }
     }
 
     /*
