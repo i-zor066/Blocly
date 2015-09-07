@@ -20,4 +20,5 @@
     <color name="dark_gray">#3C3C3C</color>
 
     <color name="transparent">@android:color/transparent</color>
+    <color name="primary_54">#7917AFCA</color>
 </resources>

@@ -259,8 +259,10 @@ public class BloclyActivity extends ActionBarActivity implements
             expandedItem = null;
         }
 
-        animateShareItem(expandedItem != null);
+        if (!onTablet) {
 
+            animateShareItem(expandedItem != null);
+        }
     }
 
     @Override
@@ -275,7 +277,7 @@ public class BloclyActivity extends ActionBarActivity implements
 
     private void animateShareItem(final boolean enabled) {
         MenuItem shareItem = menu.findItem(R.id.action_share);
-        if (shareItem.isEnabled() == enabled) {
+       if (shareItem.isEnabled() == enabled) {
             return;
         }
         shareItem.setEnabled(enabled);

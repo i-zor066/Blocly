@@ -155,10 +155,7 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemAdapterVie
         // Tablet Only
 
         TextView callout;
-        CheckBox archiveCheckboxTablet;
-        CheckBox favoriteCheckboxTablet;
-        TextView visitSiteTablet;
-        ImageButton shareItemTablet;
+
 
         public ItemAdapterViewHolder(View itemView) {
             super(itemView);
@@ -182,15 +179,7 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemAdapterVie
                 // Recover Tablet Views
                 onTablet = true;
                 callout = (TextView) itemView.findViewById(R.id.tv_rss_item_callout);
-                archiveCheckboxTablet = (CheckBox) itemView.findViewById(R.id.fa_rss_item_check_mark);
-                favoriteCheckboxTablet = (CheckBox) itemView.findViewById(R.id.fa_rss_item_favorite_star);
-                shareItemTablet = (ImageButton) itemView.findViewById(R.id.fa_action_share);
-                visitSiteTablet = (TextView) itemView.findViewById(R.id.fa_rss_item_visit_site);
-                Log.v(TAG, String.valueOf(archiveCheckboxTablet));
-                //visitSiteTablet.setOnClickListener(this);
-                //archiveCheckboxTablet.setOnCheckedChangeListener(this);
-                //favoriteCheckbox.setOnCheckedChangeListener(this);
-                //shareItemTablet.setOnClickListener(this);
+
                 if (Build.VERSION.SDK_INT >= 21) {
                     callout.setOutlineProvider(new ViewOutlineProvider() {
                         @Override
@@ -278,10 +267,11 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemAdapterVie
                     getDelegate().onItemClicked(ItemAdapter.this, rssItem);
                 }
             } else {
+
                 if (getDelegate() != null) {
                     getDelegate().onVisitClicked(ItemAdapter.this, rssItem);
-                }            }
-            // add share item get delegate which calls onItemSharedIntent (add it to blocly activity)
+                }
+            }
 
         }
 

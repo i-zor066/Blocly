@@ -1,13 +1,19 @@
 package io.bloc.android.blocly.ui.fragment;
 
 import android.app.Fragment;
+import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -24,9 +30,11 @@ import io.bloc.android.blocly.api.model.RssItem;
 /**
  * Created by igor on 6/9/15.
  */
-public class RssItemDetailFragment extends Fragment implements ImageLoadingListener {
+public class RssItemDetailFragment extends Fragment implements ImageLoadingListener, View.OnClickListener, CompoundButton.OnCheckedChangeListener {
 
     private static final String BUNDLE_EXTRA_RSS_ITEM = RssItemDetailFragment.class.getCanonicalName().concat(".EXTRA_RSS_ITEM");
+
+    private static String TAG = RssItemDetailFragment.class.getSimpleName();
 
     public static RssItemDetailFragment detailFragmentForRssItem(RssItem rssItem) {
         Bundle arguments = new Bundle();
@@ -40,12 +48,20 @@ public class RssItemDetailFragment extends Fragment implements ImageLoadingListe
     TextView title;
     TextView content;
     ProgressBar progressBar;
+    CheckBox archiveCheckboxTablet;
+    CheckBox favoriteCheckboxTablet;
+    TextView visitSiteTablet;
+    ImageButton shareItemTablet;
+    String url;
+    RssItem itemDetailFrag;
+
 
 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
 
 
 
@@ -61,6 +77,8 @@ public class RssItemDetailFragment extends Fragment implements ImageLoadingListe
                     title.setText(rssItem.getTitle());
                     content.setText(rssItem.getDescription());
                     ImageLoader.getInstance().loadImage(rssItem.getImageUrl(), RssItemDetailFragment.this);
+                    url = rssItem.getUrl();
+                    itemDetailFrag = rssItem;
                 }
 
                 @Override
@@ -74,10 +92,18 @@ public class RssItemDetailFragment extends Fragment implements ImageLoadingListe
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View inflate = inflater.inflate(R.layout.fragment_rss_item_detail, container, false);
+        archiveCheckboxTablet = (CheckBox) inflate.findViewById(R.id.fa_rss_item_check_mark);
+        favoriteCheckboxTablet = (CheckBox) inflate.findViewById(R.id.fa_rss_item_favorite_star);
+        shareItemTablet = (ImageButton) inflate.findViewById(R.id.fa_action_share);
+        visitSiteTablet = (TextView) inflate.findViewById(R.id.fa_rss_item_visit_site);
         headerImage = (ImageView) inflate.findViewById(R.id.iv_fragment_rss_item_detail_header);
         progressBar = (ProgressBar) inflate.findViewById(R.id.pb_fragment_rss_item_detail_header);
         title = (TextView) inflate.findViewById(R.id.tv_fragment_rss_item_detail_title);
         content = (TextView) inflate.findViewById(R.id.tv_fragment_rss_item_detail_content);
+        archiveCheckboxTablet.setOnCheckedChangeListener(this);
+        favoriteCheckboxTablet.setOnCheckedChangeListener(this);
+        shareItemTablet.setOnClickListener(this);
+        visitSiteTablet.setOnClickListener(this);
         return inflate;
     }
 
@@ -129,5 +155,32 @@ public class RssItemDetailFragment extends Fragment implements ImageLoadingListe
 
 
 
+    /*
+     * OnCheckedChangedListener
+     */
 
+    @Override
+    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+        Log.v(TAG, "Checked changed to: " + isChecked);
+
+    }
+
+    /*
+     * OnClick Listener
+     */
+
+
+    @Override
+    public void onClick(View view) {
+        if (view == visitSiteTablet ) {
+            Intent visitSite = new Intent(Intent.ACTION_VIEW, Uri.parse(itemDetailFrag.getUrl()));
+            startActivity(visitSite);
+        } else {
+            Intent share = new Intent(Intent.ACTION_SEND);
+            share.putExtra(Intent.EXTRA_TEXT, String.format("%s (%s)", itemDetailFrag.getTitle(), itemDetailFrag.getUrl()));
+            share.setType("text/plain");
+            Intent chooser = Intent.createChooser(share, getString(R.string.share_chooser_title));
+            startActivity(chooser);
+        }
+    }
 }

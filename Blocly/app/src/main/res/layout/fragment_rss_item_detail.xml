@@ -46,7 +46,8 @@
                 android:layout_marginBottom="0dp"
                 android:button="@drawable/btn_check_checkbox"
                 android:layout_toLeftOf="@+id/fa_rss_item_favorite_star"
-                android:layout_marginRight="8dp"
+                android:paddingBottom="0dp"
+                android:layout_marginRight="10dp"
                 android:layout_alignParentBottom="true" />
 
             <CheckBox
@@ -55,18 +56,20 @@
                 android:layout_height="wrap_content"
                 android:button="@drawable/btn_star_checkbox"
                 android:layout_toLeftOf="@+id/fa_action_share"
-                android:layout_marginRight="8dp"
+                android:paddingBottom="0dp"
+                android:layout_marginRight="10dp"
                 android:layout_alignParentBottom="true" />
 
             <ImageButton
-                style="@style/ButtonTransparent"
+                style="@style/ButtonShare"
+                android:src="@drawable/ic_share"
                 android:id="@+id/fa_action_share"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_share_selector"
                 android:layout_toLeftOf="@+id/fa_rss_item_visit_site"
+                android:paddingBottom="0dp"
                 android:layout_marginBottom="0dp"
-                android:layout_marginRight="8dp"
+                android:layout_marginRight="10dp"
                 android:layout_alignParentBottom="true" />
 
 
@@ -78,13 +81,14 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:paddingTop="4dp"
-                android:paddingRight="8dp"
-                android:paddingBottom="4dp"
+                android:paddingRight="10dp"
+                android:paddingBottom="0dp"
                 android:layout_marginBottom="0dp"
                 android:layout_alignParentBottom="true"
                 android:layout_alignParentRight="true"/>
 
         </RelativeLayout>
+
 
         <io.bloc.android.blocly.ui.widget.RobotoTextView
             style="@style/RssItemDetailHeader"

@@ -150,7 +150,7 @@ public class RssItemListFragment extends Fragment implements ItemAdapter.DataSou
         return currentItems.size();
     }
 
-         /*
+    /*
       * ItemAdapter.Delegate
       */
 
