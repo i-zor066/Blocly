@@ -41,9 +41,13 @@ public class RssItemDetailFragment extends Fragment implements ImageLoadingListe
     TextView content;
     ProgressBar progressBar;
 
+
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
 
         Bundle arguments = getArguments();
         if (arguments != null) {
@@ -122,4 +126,8 @@ public class RssItemDetailFragment extends Fragment implements ImageLoadingListe
     @Override
     public void onLoadingCancelled(String imageUri, View view) {
     }
+
+
+
+
 }

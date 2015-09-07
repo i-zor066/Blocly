@@ -57,6 +57,9 @@
         <item name="android:textAllCaps">true</item>
         <item name="robotoFont">Medium</item>
     </style>
+    <style name="ButtonTransparent">
+        <item name="android:background">?android:selectableItemBackground</item>
+    </style>
 
     <style name="RssItemTitle" parent="Base.TextAppearance.AppCompat.Body2">
         <item name="android:textColor">@color/text_primary</item>

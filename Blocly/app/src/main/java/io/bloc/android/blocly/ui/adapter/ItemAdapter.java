@@ -4,6 +4,7 @@ import android.animation.ValueAnimator;
 import android.graphics.Bitmap;
 import android.graphics.Outline;
 import android.os.Build;
+import android.support.v7.internal.view.menu.MenuView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,7 +14,9 @@ import android.view.ViewOutlineProvider;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -28,6 +31,7 @@ import io.bloc.android.blocly.R;
 import io.bloc.android.blocly.api.UIUtils;
 import io.bloc.android.blocly.api.model.RssFeed;
 import io.bloc.android.blocly.api.model.RssItem;
+import io.bloc.android.blocly.ui.fragment.RssItemDetailFragment;
 
 /**
  * Created by igor on 14/8/15.
@@ -135,21 +139,26 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemAdapterVie
         TextView title;
         TextView content;
 
+
         // Phone Only
 
         TextView feed;
         View headerWrapper;
         ImageView headerImage;
-        CheckBox archiveCheckbox;
-        CheckBox favoriteCheckbox;
         View expandedContentWrapper;
         TextView expandedContent;
-        TextView visitSite;
         RssItem rssItem;
+        CheckBox archiveCheckbox;
+        CheckBox favoriteCheckbox;
+        TextView visitSite;
 
         // Tablet Only
 
         TextView callout;
+        CheckBox archiveCheckboxTablet;
+        CheckBox favoriteCheckboxTablet;
+        TextView visitSiteTablet;
+        ImageButton shareItemTablet;
 
         public ItemAdapterViewHolder(View itemView) {
             super(itemView);
@@ -173,7 +182,15 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemAdapterVie
                 // Recover Tablet Views
                 onTablet = true;
                 callout = (TextView) itemView.findViewById(R.id.tv_rss_item_callout);
-                // #3
+                archiveCheckboxTablet = (CheckBox) itemView.findViewById(R.id.fa_rss_item_check_mark);
+                favoriteCheckboxTablet = (CheckBox) itemView.findViewById(R.id.fa_rss_item_favorite_star);
+                shareItemTablet = (ImageButton) itemView.findViewById(R.id.fa_action_share);
+                visitSiteTablet = (TextView) itemView.findViewById(R.id.fa_rss_item_visit_site);
+                Log.v(TAG, String.valueOf(archiveCheckboxTablet));
+                //visitSiteTablet.setOnClickListener(this);
+                //archiveCheckboxTablet.setOnCheckedChangeListener(this);
+                //favoriteCheckbox.setOnCheckedChangeListener(this);
+                //shareItemTablet.setOnClickListener(this);
                 if (Build.VERSION.SDK_INT >= 21) {
                     callout.setOutlineProvider(new ViewOutlineProvider() {
                         @Override
@@ -264,6 +281,7 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemAdapterVie
                 if (getDelegate() != null) {
                     getDelegate().onVisitClicked(ItemAdapter.this, rssItem);
                 }            }
+            // add share item get delegate which calls onItemSharedIntent (add it to blocly activity)
 
         }
 
@@ -274,6 +292,8 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemAdapterVie
         @Override
         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
             Log.v(TAG, "Checked changed to: " + isChecked);
+
+
 
         }
 
