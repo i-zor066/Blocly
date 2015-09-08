@@ -1,5 +1,6 @@
 package io.bloc.android.blocly.api;
 
+import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Handler;
@@ -13,7 +14,6 @@ import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import io.bloc.android.blocly.BloclyApplication;
 import io.bloc.android.blocly.BuildConfig;
 import io.bloc.android.blocly.api.model.RssFeed;
 import io.bloc.android.blocly.api.model.RssItem;
@@ -40,14 +40,14 @@ public class DataSource {
     private RssItemTable rssItemTable;
     private ExecutorService executorService;
 
-    public DataSource() {
+    public DataSource(Context context) {
         rssFeedTable = new RssFeedTable();
         rssItemTable = new RssItemTable();
         executorService = Executors.newSingleThreadExecutor();
-        databaseOpenHelper = new DatabaseOpenHelper(BloclyApplication.getSharedInstance(),
+        databaseOpenHelper = new DatabaseOpenHelper(context,
                 rssFeedTable, rssItemTable);
         if (BuildConfig.DEBUG && true) {
-            BloclyApplication.getSharedInstance().deleteDatabase("blocly_db");
+            context.deleteDatabase("blocly_db");
             SQLiteDatabase writableDatabase = databaseOpenHelper.getWritableDatabase();
             new RssFeedTable.Builder()
                     .setTitle("AndroidCentral")
