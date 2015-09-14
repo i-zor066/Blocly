@@ -52,7 +52,6 @@ public class RssItemDetailFragment extends Fragment implements ImageLoadingListe
     CheckBox favoriteCheckboxTablet;
     TextView visitSiteTablet;
     ImageButton shareItemTablet;
-    String url;
     RssItem itemDetailFrag;
 
 
@@ -77,7 +76,6 @@ public class RssItemDetailFragment extends Fragment implements ImageLoadingListe
                     title.setText(rssItem.getTitle());
                     content.setText(rssItem.getDescription());
                     ImageLoader.getInstance().loadImage(rssItem.getImageUrl(), RssItemDetailFragment.this);
-                    url = rssItem.getUrl();
                     itemDetailFrag = rssItem;
                 }
 

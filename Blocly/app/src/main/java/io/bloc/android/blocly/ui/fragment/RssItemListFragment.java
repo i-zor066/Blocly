@@ -3,6 +3,7 @@ package io.bloc.android.blocly.ui.fragment;
 import android.app.Activity;
 import android.app.Fragment;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -30,6 +31,9 @@ public class RssItemListFragment extends Fragment implements ItemAdapter.DataSou
 
     private static final String BUNDLE_EXTRA_RSS_FEED = RssItemListFragment.class.getCanonicalName().concat(".EXTRA_RSS_FEED");
 
+    private static final String CURRENT_ITEMS = "current_items";
+    private static final String CURRENT_FEEDS = "current_feed";
+
     // #11
     public static RssItemListFragment fragmentForRssFeed(RssFeed rssFeed) {
         Bundle arguments = new Bundle();
@@ -54,6 +58,8 @@ public class RssItemListFragment extends Fragment implements ItemAdapter.DataSou
     private List<RssItem> currentItems = new ArrayList<RssItem>();
 
     private WeakReference<Delegate> delegate;
+
+   // private int lastFirstVisiblePosition;
 
     @Override
     public void onAttach(Activity activity) {
@@ -98,7 +104,9 @@ public class RssItemListFragment extends Fragment implements ItemAdapter.DataSou
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
         swipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.primary));
+
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -107,6 +115,7 @@ public class RssItemListFragment extends Fragment implements ItemAdapter.DataSou
                         new DataSource.Callback<List<RssItem>>() {
                             @Override
                             public void onSuccess(List<RssItem> rssItems) {
+
                                 if (getActivity() == null) {
                                     return;
                                 }
@@ -126,9 +135,28 @@ public class RssItemListFragment extends Fragment implements ItemAdapter.DataSou
             }
         });
 
+        if ( (savedInstanceState!= null) && savedInstanceState.containsKey(CURRENT_ITEMS)) {
+            currentItems = savedInstanceState.getParcelableArrayList(CURRENT_ITEMS);
+
+        }
+        if ( (savedInstanceState!= null) && savedInstanceState.containsKey(CURRENT_FEEDS)) {
+            currentFeed = savedInstanceState.getParcelable(CURRENT_FEEDS);
+        }
+
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(itemAdapter);
+
+
+    }
+
+   @Override
+    public void onSaveInstanceState(Bundle outState) {
+       super.onSaveInstanceState(outState);
+       outState.putParcelable(CURRENT_FEEDS, currentFeed);
+       outState.putParcelableArrayList(CURRENT_ITEMS, (ArrayList<? extends Parcelable>) currentItems);
+
+
     }
 
     /*
