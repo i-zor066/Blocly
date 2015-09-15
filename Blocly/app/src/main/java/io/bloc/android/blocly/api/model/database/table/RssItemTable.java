@@ -53,6 +53,14 @@ public class RssItemTable extends Table {
             return this;
         }
 
+        public Builder setFavorite(boolean favorite) {
+            values.put(COLUMN_FAVORITE, favorite);
+            return this;
+        }
+
+        public void updateForGuid(SQLiteDatabase writableDB, String guid) {
+            writableDB.update(RssItemTable.NAME, values, COLUMN_GUID + " = ?", new String[] { guid});
+        }
 
 
         @Override
@@ -109,6 +117,10 @@ public class RssItemTable extends Table {
         boolean hasItem = query.moveToFirst();
         query.close();
         return hasItem;
+    }
+
+    public static Cursor getItemsForGuid(SQLiteDatabase readonlyDatabase, String guid) {
+        return readonlyDatabase.query(true, NAME, null, COLUMN_GUID + " = ?",  new String[]{ guid}, null, null, COLUMN_PUB_DATE + " DESC", null);
     }
 
     private static final String NAME = "rss_items";

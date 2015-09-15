@@ -280,7 +280,8 @@ public class BloclyActivity extends ActionBarActivity implements
     @Override
     public void onFavoriteChecked(RssItemListFragment rssItemListFragment, RssItem rssItem) {
         Toast.makeText(this, "Favourite checked for: " + rssItem.getTitle() + ", Favorite is: " + rssItem.isFavorite(), Toast.LENGTH_SHORT).show();
-        BloclyApplication.getSharedDataSource().updateRssItem(rssItem);
+        BloclyApplication.getSharedDataSource().updateRssItemFavorite(rssItem);
+        BloclyApplication.getSharedDataSource().testFavouriteStatus(rssItem);
     }
 
     /*

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Handler;
+import android.util.Log;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -326,9 +327,25 @@ public class DataSource {
                 .insert(databaseOpenHelper.getWritableDatabase());
     }
 
-    public void updateRssItem(RssItem rssItem) {
+    public void updateRssItemFavorite(RssItem rssItem) {
+
+        boolean favourite = rssItem.isFavorite();
+        String guid = rssItem.getGuid();
+
+        new RssItemTable.Builder()
+                .setFavorite(favourite)
+                .updateForGuid(databaseOpenHelper.getWritableDatabase(), guid);
 
 
+    }
+
+    public void testFavouriteStatus(RssItem rssItem) {
+        Cursor cursor = RssItemTable.getItemsForGuid(databaseOpenHelper.getReadableDatabase(), rssItem.getGuid());
+        cursor.moveToFirst();
+        boolean favDBstat = RssItemTable.getFavorite(cursor);
+        String RssItemTitle = RssItemTable.getTitle(cursor);
+        cursor.close();
+        Log.v("DB status for ", RssItemTitle + " is " + favDBstat);
 
     }
 
