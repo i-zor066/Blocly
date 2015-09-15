@@ -326,4 +326,10 @@ public class DataSource {
                 .insert(databaseOpenHelper.getWritableDatabase());
     }
 
+    public void updateRssItem(RssItem rssItem) {
+
+
+
+    }
+
 }

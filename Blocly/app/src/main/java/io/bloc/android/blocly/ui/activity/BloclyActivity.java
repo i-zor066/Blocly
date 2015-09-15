@@ -277,6 +277,12 @@ public class BloclyActivity extends ActionBarActivity implements
         startActivity(visitIntent);
     }
 
+    @Override
+    public void onFavoriteChecked(RssItemListFragment rssItemListFragment, RssItem rssItem) {
+        Toast.makeText(this, "Favourite checked for: " + rssItem.getTitle() + ", Favorite is: " + rssItem.isFavorite(), Toast.LENGTH_SHORT).show();
+        BloclyApplication.getSharedDataSource().updateRssItem(rssItem);
+    }
+
     /*
       * Private methods
       */

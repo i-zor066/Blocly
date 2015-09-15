@@ -43,6 +43,7 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemAdapterVie
     public static interface Delegate {
         public void onItemClicked(ItemAdapter itemAdapter, RssItem rssItem);
         public void onVisitClicked(ItemAdapter itemAdapter, RssItem rssItem);
+        public void onFavoriteChecked(ItemAdapter itemAdapter, RssItem rssItem);
     }
 
     private static String TAG = ItemAdapter.class.getSimpleName();
@@ -273,7 +274,13 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemAdapterVie
 
         @Override
         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-            Log.v(TAG, "Checked changed to: " + isChecked);
+            Log.v(TAG, "Checked changed to: " + isChecked + " " + String.valueOf(buttonView));
+            if (buttonView == favoriteCheckbox) {
+                if (getDelegate() != null) {
+                    rssItem.setFavorite(isChecked);
+                    getDelegate().onFavoriteChecked(ItemAdapter.this, rssItem);
+                }
+            }
 
         }
 

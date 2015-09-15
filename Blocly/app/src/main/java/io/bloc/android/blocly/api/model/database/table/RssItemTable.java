@@ -53,6 +53,8 @@ public class RssItemTable extends Table {
             return this;
         }
 
+
+
         @Override
         public long insert(SQLiteDatabase writableDB) {
             return writableDB.insert(RssItemTable.NAME, null, values);

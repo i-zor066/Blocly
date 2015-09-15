@@ -43,6 +43,7 @@ public class RssItemListFragment extends Fragment implements ItemAdapter.DataSou
         public void onItemExpanded(RssItemListFragment rssItemListFragment, RssItem rssItem);
         public void onItemContracted(RssItemListFragment rssItemListFragment, RssItem rssItem);
         public void onItemVisitClicked(RssItemListFragment rssItemListFragment, RssItem rssItem);
+        public void onFavoriteChecked(RssItemListFragment rssItemListFragment, RssItem rssItem);
     }
 
     // #5
@@ -195,5 +196,11 @@ public class RssItemListFragment extends Fragment implements ItemAdapter.DataSou
     public void onVisitClicked(ItemAdapter itemAdapter, RssItem rssItem) {
         // #9c
         delegate.get().onItemVisitClicked(this, rssItem);
+    }
+
+    @Override
+    public void onFavoriteChecked(ItemAdapter itemAdapter, RssItem rssItem) {
+        // #9c
+        delegate.get().onFavoriteChecked(this, rssItem);
     }
 }
