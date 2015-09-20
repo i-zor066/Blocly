@@ -339,6 +339,8 @@ public class DataSource {
 
     }
 
+
+
     public void testFavouriteStatus(RssItem rssItem) {
         Cursor cursor = RssItemTable.getItemsForGuid(databaseOpenHelper.getReadableDatabase(), rssItem.getGuid());
         cursor.moveToFirst();
@@ -347,6 +349,11 @@ public class DataSource {
         cursor.close();
         Log.v("DB status for ", RssItemTitle + " is " + favDBstat);
 
+    }
+
+    public boolean getFavouriteStatus (RssItem rssItem) {
+        Cursor cursor = RssItemTable.getItemsForGuid(databaseOpenHelper.getReadableDatabase(), rssItem.getGuid());
+        return RssItemTable.getFavorite(cursor);
     }
 
 }
